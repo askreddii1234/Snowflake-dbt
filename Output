@@ -1,0 +1,12 @@
+/*
+    Deduplicate account_auth_limit data
+*/
+WITH source_data AS (
+  SELECT *
+  FROM {{ source('oracle_core_db', 'account_auth_limit') }}
+)
+SELECT *
+FROM {{ dedup_query(
+    query='source_data',
+    composite_primary_key='velocity_id, xid'
+) }}
