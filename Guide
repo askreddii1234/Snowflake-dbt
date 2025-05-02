@@ -1,0 +1,88 @@
+# Deduplication Model Generator
+
+This Python script automates the generation of deduplication models for your dbt project by scanning your source YAML files for tables with `dedup_key` metadata.
+
+## Requirements
+
+- Python 3.6+
+- PyYAML
+
+Install dependencies with:
+```bash
+pip install pyyaml
+```
+
+## Files in this Package
+
+1. `dedup_generator.py` - The main Python script that generates deduplication models
+2. `core_db.yml` - Sample source YAML file for testing
+3. `test_dedup_generator.sh` - Test script to verify the generator works correctly
+4. `expected_output/dedup_account_auth_limit.sql` - Example of expected output
+
+## How It Works
+
+The script:
+1. Scans all YAML files in a specified directory for dbt sources
+2. Identifies tables that have a `dedup_key` defined in their `meta` section
+3. Generates a corresponding deduplication model SQL file for each identified table
+4. Places the generated models in the specified output directory
+
+## Usage
+
+```bash
+python dedup_generator.py --sources-dir <sources_directory> --output-dir <output_directory> [--client-schema-filter]
+```
+
+### Arguments:
+
+- `--sources-dir`: Directory containing your dbt source YAML files
+- `--output-dir`: Directory where deduplication model files will be created
+- `--client-schema-filter`: (Optional) Add client schema filtering to the generated models
+
+### Example:
+
+```bash
+python dedup_generator.py --sources-dir models/sources --output-dir models/dedup_table
+```
+
+## Testing
+
+Run the included test script to verify the generator works correctly:
+
+```bash
+chmod +x test_dedup_generator.sh
+./test_dedup_generator.sh
+```
+
+The test script:
+1. Creates test directories
+2. Copies the sample YAML file
+3. Runs the generator
+4. Verifies the output matches the expected number of models
+5. Compares content of the generated models
+6. Tests with client schema filtering option
+
+## Integration with dbt
+
+To integrate this tool with your dbt workflow:
+
+1. Place the `dedup_generator.py` script in your dbt project root or a utility directory
+2. Run the script before your dbt runs to ensure deduplication models are up to date
+3. Consider automating this as part of your CI/CD pipeline or dbt execution workflow
+
+You can also wrap this in an Airflow DAG to automate the generation and execution of your deduplication models.
+
+## Source YAML Format
+
+For this to work, your source YAML files need to include a `dedup_key` in the `meta` section of tables that require deduplication:
+
+```yaml
+sources:
+  - name: source_name
+    tables:
+      - name: table_name
+        meta:
+          dedup_key: column1, column2
+```
+
+The `dedup_key` should contain the column names that form the composite primary key for deduplication.
