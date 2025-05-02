@@ -1,0 +1,97 @@
+version: 2
+
+sources:
+  - name: oracle_core_db
+    database: galileo_raw
+    schema: core
+    tables:
+      - name: account_auth_limit
+        description: "Account auth limit"
+        meta:
+          dq: true
+          dq_cnt: count(1)
+          dq_amt: sum(amt)
+          dq_dt: start_date
+          dedup_key: velocity_id, xid
+        columns:
+          - name: OP
+            data_type: TEXT
+            description: ''
+          - name: ROW_EXTRACT_TIME
+            data_type: TIMESTAMP_NTZ
+            description: ''
+          - name: T_TIME
+            data_type: TIMESTAMP_NTZ
+            description: ''
+          - name: SEQUENCE_NUMBER
+            data_type: TEXT
+            description: ''
+          - name: SCHEMA_NAME
+            data_type: TEXT
+            description: ''
+          - name: TABLE_NAME
+            data_type: TEXT
+            description: ''
+          - name: XID
+            data_type: TEXT
+            description: ''
+      
+      - name: ac_app
+        description: "Application data"
+        meta:
+          dq: true
+          dq_cnt: count(1)
+          dq_dt: modified_dt
+          dedup_key: app_id, schema_name
+        columns:
+          - name: APP_ID
+            data_type: NUMBER
+            description: 'Application identifier'
+          - name: SCHEMA_NAME
+            data_type: TEXT
+            description: 'Schema name'
+          - name: OP
+            data_type: TEXT
+            description: 'Operation type'
+
+      - name: customer
+        description: "Customer information"
+        meta:
+          dq: true
+          dq_cnt: count(1)
+          dq_dt: created_dt
+        columns:
+          - name: CUSTOMER_ID
+            data_type: NUMBER
+            description: 'Customer identifier'
+          - name: CUSTOMER_NAME
+            data_type: TEXT
+            description: 'Customer name'
+          - name: STATUS
+            data_type: TEXT 
+            description: 'Customer status'
+
+      - name: transaction
+        description: "Transaction data"
+        meta:
+          dq: true
+          dq_cnt: count(1)
+          dq_amt: sum(amount)
+          dq_dt: transaction_date
+          dedup_key: transaction_id, account_id
+        columns:
+          - name: TRANSACTION_ID
+            data_type: NUMBER
+            description: 'Transaction identifier'
+          - name: ACCOUNT_ID
+            data_type: NUMBER
+            description: 'Account identifier'
+          - name: AMOUNT
+            data_type: NUMBER
+            description: 'Transaction amount'
+          - name: TRANSACTION_DATE
+            data_type: TIMESTAMP_NTZ
+            description: 'Transaction date'
+          - name: OP
+            data_type: TEXT
+            description: 'Operation type'
